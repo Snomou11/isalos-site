@@ -27,3 +27,6 @@ yarn-error.log*
 # Editor
 .vscode/
 .idea/
+
+# Local images and assets
+public/images/
