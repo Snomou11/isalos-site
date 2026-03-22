@@ -1,12 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
-# answer again i cannot see anything
-
-I created the file for you: **README.md** .
-Download that file from the shared file list in the chat, then put it in your project root.
-
-If you want, here is the exact content again so you can copy-paste it manually:
-
 ```md
 # 🌊 Isalos Apartments — Official Website
 
