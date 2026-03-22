@@ -128,6 +128,3 @@ Velika Beach, Velika, Larisa, Thessaly, Greece
 Private project — all rights reserved © Isalos Apartments
 
 ```
-
-If you want, I can also give you a **very short README** or a **better professional README** with badges and screenshots.```
-
