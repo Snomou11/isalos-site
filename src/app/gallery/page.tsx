@@ -1,0 +1,50 @@
+import Image from 'next/image'
+
+const images = [
+  { src: '/images/beach2.jpg',   alt: 'Velika beach sunset'          },
+  { src: '/images/Beach1.jpg',   alt: 'Beach umbrellas at sunset'    },
+  { src: '/images/beach3.jpg',   alt: 'Golden hour at Velika'        },
+  { src: '/images/mprosta.jpg',  alt: 'Isalos complex exterior'      },
+  { src: '/images/mprosta1.jpg', alt: 'Complex front view'           },
+  { src: '/images/sof1.jpg',     alt: 'Superior Suite 1'             },
+  { src: '/images/sof1s.jpg',    alt: 'Superior Suite 1 living'      },
+  { src: '/images/sof1sa.jpg',   alt: 'Superior Suite 1 seating'     },
+  { src: '/images/sof1sal.jpg',  alt: 'Superior Suite 1 salon'       },
+  { src: '/images/sof1sal2.jpg', alt: 'Superior Suite 1 salon view'  },
+  { src: '/images/sof1sal3.jpg', alt: 'Superior Suite 1 detail'      },
+  { src: '/images/sof1ver.jpg',  alt: 'Superior Suite 1 veranda'     },
+  { src: '/images/sof1bed.jpg',  alt: 'Superior Suite 1 bedroom'     },
+  { src: '/images/sof1bath.jpg', alt: 'Superior Suite 1 bathroom'    },
+  { src: '/images/sof1bath1.jpg',alt: 'Superior Suite 1 shower'      },
+  { src: '/images/sof1kou.jpg',  alt: 'Superior Suite 1 kitchen'     },
+  { src: '/images/sof1b.jpg',    alt: 'Superior Suite 1 balcony'     },
+  { src: '/images/sof2b.jpg',    alt: 'Superior Suite 2 balcony'     },
+  { src: '/images/sof2ba.jpg',   alt: 'Superior Suite 2 bathroom'    },
+  { src: '/images/sof2bed.jpg',  alt: 'Superior Suite 2 bedroom'     },
+  { src: '/images/sof2s.jpg',    alt: 'Superior Suite 2'             },
+  { src: '/images/1.jpg',        alt: 'Studio with sea view'         },
+  { src: '/images/1bed.jpg',     alt: 'Studio bedroom'               },
+  { src: '/images/1katw.jpg',    alt: 'Studio lower level'           },
+  { src: '/images/1kouzina.jpg', alt: 'Studio kitchen'               },
+  { src: '/images/2.jpg',        alt: 'Double room'                  },
+  { src: '/images/2bed.jpg',     alt: 'Double room bed'              },
+  { src: '/images/2bath.jpg',    alt: 'Double room bathroom'         },
+  { src: '/images/3.jpg',        alt: 'Family room'                  },
+]
+
+export default function GalleryPage() {
+  return (
+    <div className="pt-24 max-w-6xl mx-auto px-4 py-12">
+      <h1 className="font-serif text-4xl md:text-5xl font-bold text-isalos-dark text-center mb-4">Gallery</h1>
+      <p className="text-center text-gray-500 mb-12">A glimpse of life at Isalos — rooms, sunsets and the sea.</p>
+      <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+        {images.map((img, i) => (
+          <div key={i} className="break-inside-avoid rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow">
+            <Image src={img.src} alt={img.alt} width={600} height={400}
+              className="w-full h-auto object-cover hover:scale-105 transition-transform duration-500" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

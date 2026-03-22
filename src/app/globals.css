@@ -1,0 +1,11 @@
+﻿@import "tailwindcss";
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    background-color: #EEF4FB;
+    color: #1A365D;
+  }
+  h1, h2, h3, h4 { color: #1A365D; }
+  p { color: #4A5568; }
+}
