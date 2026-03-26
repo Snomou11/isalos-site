@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     description: 'Beachfront apartments on Velika beach at the foot of Mount Pelion.',
     url: 'https://www.isalos-velika.gr',
     siteName: 'Isalos Apartments',
-    images: [{ url: '/images/mprosta1.jpg', width: 1200, height: 630 }],
+    images: [{ url: '/images/mprosta1.webp', width: 1200, height: 630 }],
     locale: 'en_US',
     type: 'website',
   },

@@ -342,7 +342,7 @@ export default function RoomPage() {
                 {status === 'loading'
                   ? '⏳ Sending your request...'
                   : nights > 0
-                    ? `✉️ Send Reservation Request · €${totalPrice}`
+                    ? ` Send Reservation Request · €${totalPrice}`
                     : 'Select dates to continue'}
               </button>
 

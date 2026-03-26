@@ -25,8 +25,8 @@ export default function ContactPage() {
         <div className="space-y-6">
           {[
             { icon: '📍', label: 'Address',   value: 'Velika, Larisa, Greece',     href: null },
-            { icon: '📞', label: 'Phone',     value: '+30 XXX XXX XXXX',           href: 'tel:+30XXXXXXXXXX' },
-            { icon: '✉️', label: 'Email',     value: 'info@isalos-velika.gr',      href: 'mailto:info@isalos-velika.gr' },
+            { icon: '📞', label: 'Phone',     value: '+30 6947811102',           href: 'tel:+306947811102' },
+            { icon: '✉️', label: 'Email',     value: 'isalosrooms@gmail.com',      href: 'mailto:isalosrooms@gmail.com' },
             { icon: '🕐', label: 'Check-in',  value: '15:00 – 21:00',              href: null },
             { icon: '🕙', label: 'Check-out', value: '08:00 – 11:00',              href: null },
           ].map(item => (

@@ -2,11 +2,11 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
-    formats: ['image/webp', 'image/avif'],
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
-    // Remove unoptimized: true if you had it — let Next.js optimise
   },
 }
+
 export default nextConfig

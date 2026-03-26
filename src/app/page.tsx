@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 
+
 const features = [
   { icon: '🌊', title: 'Beachfront Location', desc: 'Sea in front, mountains behind — Velika beach is your backyard.' },
   { icon: '🏡', title: 'Home Comforts',        desc: 'Fully equipped kitchens, private bathrooms, A/C and free Wi-Fi.' },
@@ -9,11 +10,11 @@ const features = [
 ]
 
 const roomPreviews = [
-  { slug: 'studio',           name: 'Studio',           img: '/images/1.jpg',     guests: 2, price: 60 },
-  { slug: 'double',           name: 'Double Room',       img: '/images/2.jpg',     guests: 2, price: 70 },
-  { slug: 'superior-suite-1', name: 'Superior Suite 1',  img: '/images/sof1.jpg',  guests: 2, price: 90 },
-  { slug: 'superior-suite-2', name: 'Superior Suite 2',  img: '/images/sof2b.jpg', guests: 2, price: 90 },
-  { slug: 'family',           name: 'Family Room',       img: '/images/3.jpg',     guests: 4, price: 85 },
+  { slug: 'studio',           name: 'Studio',           img: '/images/1.webp',     guests: 2, price: 60 },
+  { slug: 'double',           name: 'Double Room',       img: '/images/2.webp',     guests: 2, price: 70 },
+  { slug: 'superior-suite-1', name: 'Superior Suite 1',  img: '/images/sof1.webp',  guests: 2, price: 90 },
+  { slug: 'superior-suite-2', name: 'Superior Suite 2',  img: '/images/sof2b.webp', guests: 2, price: 90 },
+  { slug: 'family',           name: 'Family Room',       img: '/images/3.webp',     guests: 4, price: 85 },
 ]
 
 
@@ -63,10 +64,9 @@ export default function HomePage() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <Image
           src="/images/beach2.jpg"
-          alt="Isalos Apartments — Velika, Larisa, Greece"
+          alt="Velika beach — Isalos Apartments"
           fill
           className="object-cover object-center"
-          sizes="100vw"
           priority
         />
         <div className="absolute inset-0"

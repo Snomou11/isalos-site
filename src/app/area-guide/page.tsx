@@ -22,7 +22,7 @@ const beaches = [
     name: 'Psarolakas Beach',
     distance: '🚗 ~20 min',
     description:
-      'A peaceful and largely undiscovered beach nestled between Kokkino Nero and Stomio, Psarolakas is one of the largest of the smaller beaches in the northern Larissa coastline. Beautifully clear water, fine pebbles and a magical natural setting — accessible only via a short 10-minute footpath shaded by plane trees, which keeps the crowds away. Perfect for those who enjoy a quiet escape with nature all around.',
+      'A peaceful and largely undiscovered beach nestled between Kokkino Nero and Stomio, Psarolakas is one of the largest of the smaller beaches in the northern Larisa coastline. Beautifully clear water, fine pebbles and a magical natural setting — accessible only via a short 10-minute footpath shaded by plane trees, which keeps the crowds away. Perfect for those who enjoy a quiet escape with nature all around.',
   },
   {
     name: 'Vrachakia Beach',
@@ -74,7 +74,7 @@ const activities = [
   { icon: '🚴', name: 'Cycling',                desc: 'Flat coastal roads and mountain trails for all levels.' },
   { icon: '🥾', name: 'Hiking',                 desc: 'Trails through Mavrovouni, Kissavos and Lower Olympus forests.' },
   { icon: '🍷', name: 'Wine Tasting',           desc: 'Visit the Rapsani vineyards on the slopes of Olympus — just 30 minutes away.' },
-  { icon: '🏛️', name: 'Culture & History',      desc: 'Visit Ambelakia, Larissa, ancient Dion and the Vale of Tempi.' },
+  { icon: '🏛️', name: 'Culture & History',      desc: 'Visit Ambelakia, Larisa, ancient Dion and the Vale of Tempi.' },
 ]
 
 export default function AreaGuidePage() {
