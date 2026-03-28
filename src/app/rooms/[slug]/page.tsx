@@ -61,26 +61,42 @@ export default function RoomPage() {
   useEffect(() => {
     if (!slug) return
     const load = async () => {
+      // Fetch price from rooms table
       const { data: roomData } = await supabase
         .from('rooms').select('price_per_night').eq('slug', slug).single()
       if (roomData) setPricePerNight(getSeasonalPrice(roomData.price_per_night))
 
-      const { data: roomRow } = await supabase
-        .from('rooms').select('id').eq('slug', slug).single()
-      if (!roomRow) return
-
+      // Fetch blocked ranges from availability table (what admin sets)
       const { data: blocked } = await supabase
-        .from('blocked_dates').select('date').eq('room_id', roomRow.id)
-      if (blocked) setBlockedDates(blocked.map(b => new Date(b.date)))
+        .from('availability')
+        .select('date_from, date_to')
+        .eq('room_slug', slug)
+        .eq('is_blocked', true)
 
+      if (blocked) {
+        const allDates: Date[] = []
+        blocked.forEach(row => {
+          const start = new Date(row.date_from)
+          const end = new Date(row.date_to)
+          for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+            allDates.push(new Date(d))
+          }
+        })
+        setBlockedDates(allDates)
+      }
+
+      // Also fetch confirmed reservations and block those too
       const { data: reservations } = await supabase
-        .from('reservations').select('check_in, check_out')
-        .eq('room_id', roomRow.id).eq('status', 'confirmed')
+        .from('reservations')
+        .select('check_in, check_out')
+        .eq('room_id', slug)
+        .eq('status', 'confirmed')
+
       if (reservations) {
         const resDates: Date[] = []
         reservations.forEach(r => {
           const start = new Date(r.check_in)
-          const end   = new Date(r.check_out)
+          const end = new Date(r.check_out)
           for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
             resDates.push(new Date(d))
           }

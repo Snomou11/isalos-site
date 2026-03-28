@@ -82,7 +82,7 @@ export default function HomePage() {
     
     {/* Position 3: Center (red dot 3) */}
     <div className="absolute top-[55%] left-1/2 -translate-x-1/2 w-64 h-48 lg:w-80 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/40 z-30">
-      <Image src="/images/1.webp" alt="Studio" fill className="object-cover" sizes="22vw" />
+      <Image src="/images/1.webp" priority alt="Studio" fill className="object-cover" sizes="22vw" />
     </div>
     
     {/* Position 4: Bottom-right (red dot 4) */}
