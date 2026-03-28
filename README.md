@@ -1,7 +1,7 @@
 ```md
 # 🌊 Isalos Apartments — Official Website
 
-Beachfront apartment booking website for **Isalos Apartments**, located directly on Velika beach, Larisa, Greece.
+Seaside apartment booking website for **Isalos Apartments**, located directly on Velika beach, Larisa, Greece.
 
 Built with **Next.js 14**, **Tailwind CSS** and **Supabase**.
 
@@ -9,7 +9,7 @@ Built with **Next.js 14**, **Tailwind CSS** and **Supabase**.
 
 ## 🏖️ About
 
-Isalos is a family-run beachfront complex on Velika beach, at the foot of the mountains of Thessaly.
+Isalos is a family-run Seaside complex on Velika beach, at the foot of the mountains of Thessaly.
 This website allows guests to browse rooms, check availability, request reservations and explore the surrounding area.
 
 ---

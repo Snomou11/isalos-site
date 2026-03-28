@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
           <h3 className="font-serif text-xl font-bold mb-3">ISALOS</h3>
           <p className="text-sm text-gray-300 leading-relaxed">
-            Beachfront apartments in Velika, Thessaly.<br />
+            Seaside apartments in Velika, Thessaly.<br />
             Your home by the sea.
           </p>
         </div>

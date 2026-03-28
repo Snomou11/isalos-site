@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Contact | Isalos Apartments — Velika, Pelion',
-  description: 'Get in touch with Isalos Apartments on Velika beach, Pelion, Greece.',
+  title: 'Contact | Isalos Apartments — Velika, Larisa',
+  description: 'Get in touch with Isalos Apartments on Velika beach, Larisa, Greece.',
 }
 
 export default function ContactPage() {

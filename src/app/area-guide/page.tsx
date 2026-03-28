@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Explore the Region | Isalos Apartments — Velika, Pelion',
+  title: 'Explore the Region | Isalos Apartments — Velika, Larisa',
   description: 'Discover the beaches, mountain villages, hiking trails, local tavernas and activities near Isalos Apartments on Velika beach, Thessaly, Greece.',
 }
 

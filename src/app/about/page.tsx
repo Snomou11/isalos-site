@@ -2,8 +2,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'About Us | Isalos Apartments — Velika, Pelion',
-  description: 'Learn about Isalos, a family-run beachfront apartment complex on Velika beach at the foot of Mount Pelion, Greece.',
+  title: 'About Us | Isalos Apartments — Velika, Larisa',
+  description: 'Learn about Isalos, a family-run Seaside apartment complex on Velika beach at the foot of Mount Larisa, Greece.',
 }
 
 export default function AboutPage() {
@@ -19,7 +19,7 @@ export default function AboutPage() {
           About Isalos
         </h1>
         <p className="text-gray-500 max-w-xl mx-auto leading-relaxed">
-          A family story, a love for the sea, and a beautiful corner of Pelion.
+          A family story, a love for the sea, and a beautiful corner of Larisa.
         </p>
       </div>
 
@@ -30,11 +30,11 @@ export default function AboutPage() {
         </div>
         <div className="space-y-5 text-gray-600 leading-relaxed">
           <h2 className="font-serif text-2xl font-bold text-isalos-dark">
-            Where Pelion meets the sea
+            Where Larisa meets the sea
           </h2>
           <p>
             Isalos sits right on Velika beach, one of the most unspoilt stretches of coastline
-            on the Pelion peninsula. With the dense green forests of Mount Pelion rising
+            on the Larisa peninsula. With the dense green forests of Mount Larisa rising
             behind you and the calm blue waters of the Aegean stretching ahead, it is a place
             unlike anywhere else in Greece.
           </p>
@@ -54,7 +54,7 @@ export default function AboutPage() {
       {/* Values */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-20">
         {[
-          { icon: '🌿', title: 'Nature & Tranquility', desc: 'Surrounded by the lush forests of Pelion and the calm Aegean sea — far from the crowds.' },
+          { icon: '🌿', title: 'Nature & Tranquility', desc: 'Surrounded by the lush forests of Larisa and the calm Aegean sea — far from the crowds.' },
           { icon: '❤️', title: 'Family Hospitality',   desc: 'We treat every guest as a friend. Personal attention and genuine warmth from arrival to departure.' },
           { icon: '🏖️', title: 'Beach Life Included',  desc: 'Sunbeds, umbrellas, kayaks and snorkeling equipment — the beach experience is part of your stay.' },
         ].map(v => (
