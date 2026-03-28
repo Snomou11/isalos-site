@@ -11,7 +11,7 @@ const features = [
 ]
 
 const roomPreviews = [
-  { slug: 'studio',           name: 'Studio',           img: '/images/1.webp',     guests: 2, price: 0,
+  { slug: 'studio',           name: 'Studio',           img: '/images/1.webp',     guests: 2, price: 0 },
   { slug: 'double',           name: 'Double Room',      img: '/images/2.webp',     guests: 2, price: 0 },
   { slug: 'superior-suite-1', name: 'Superior Suite 1', img: '/images/sof1.webp',  guests: 2, price: 0 },
   { slug: 'superior-suite-2', name: 'Superior Suite 2', img: '/images/sof2b.webp', guests: 2, price: 0 },

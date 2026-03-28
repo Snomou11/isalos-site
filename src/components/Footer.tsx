@@ -7,7 +7,7 @@ export default function Footer() {
         <div>
           <h3 className="font-serif text-xl font-bold mb-3">ISALOS</h3>
           <p className="text-sm text-gray-300 leading-relaxed">
-            Seaside apartments in Velika, Thessaly.<br />
+            Seaside apartments in Velika, Larisa.<br />
             Your home by the sea.
           </p>
         </div>
@@ -25,8 +25,8 @@ export default function Footer() {
         <div>
           <h4 className="font-semibold mb-3 text-isalos-lightblue">Contact</h4>
           <p className="text-sm text-gray-300 space-y-1">
-            <span className="block">📍 Velika, Thessaly, Greece</span>
-            <span className="block">✉️ neroistro@gmail.com</span>
+            <span className="block">📍 Velika, Larisa, Greece</span>
+            <span className="block">✉️ isalosrooms@gmail.com</span>
           </p>
         </div>
       </div>

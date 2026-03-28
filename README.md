@@ -119,7 +119,7 @@ src/
 ## 📍 Location
 
 **Isalos Apartments**
-Velika Beach, Velika, Larisa, Thessaly, Greece
+Velika Beach, Larisa, Greece
 
 ---
 

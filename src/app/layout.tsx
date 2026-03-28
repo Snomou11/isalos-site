@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   keywords: ['Isalos', 'Velika', 'Larisa', 'Seaside apartments', 'Greece', 'Thessaly'],
   openGraph: {
     title: 'Isalos Apartments — Velika, Larisa',
-    description: 'Seaside apartments on Velika beach at the foot of Mount Larisa.',
+    description: 'Seaside apartments on Velika beach at the foot of Mount Olympos.',
     url: 'https://www.isalos-velika.gr',
     siteName: 'Isalos Apartments',
     images: [{ url: '/images/mprosta1.webp', width: 1200, height: 630 }],
