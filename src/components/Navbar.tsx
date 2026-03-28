@@ -45,10 +45,11 @@ export default function Navbar() {
       {lang === 'en' ? 'Book Now' : 'Κράτηση'}
     </Link>
     
-    <Link href="#contact" className="p-3 hover:bg-white/10 rounded-full transition-all shadow-lg hover:shadow-xl">
+    <Link href="contact" className="p-3 hover:bg-white/10 rounded-full transition-all shadow-lg hover:shadow-xl">
       <PhoneIcon className="w-6 h-6 text-white" />
     </Link>
-    <Link href="#contact" className="p-3 hover:bg-white/10 rounded-full transition-all shadow-lg hover:shadow-xl">
+
+    <Link href="/contact" className="p-3 hover:bg-white/10 rounded-full transition-all shadow-lg hover:shadow-xl">
       <EnvelopeIcon className="w-6 h-6 text-white" />
     </Link>
   </div>

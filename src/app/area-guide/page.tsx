@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Explore the Region | Isalos Apartments — Velika, Larisa',
-  description: 'Discover the beaches, mountain villages, hiking trails, local tavernas and activities near Isalos Apartments on Velika beach, Thessaly, Greece.',
+  description: 'Discover the beaches, mountain villages, hiking trails, local tavernas and activities near Isalos Apartments on Velika beach, Larisa, Greece.',
 }
 
 const beaches = [
@@ -10,7 +10,7 @@ const beaches = [
     name: 'Velika Beach',
     distance: '📍 On your doorstep',
     description:
-      'The beach right in front of Isalos — awarded with the Blue Flag for water quality, Velika is a long stretch of sand and fine pebbles with crystal clear water. Relatively uncrowded even in peak season, it is the perfect base for a relaxed beach holiday. Sunbeds and umbrellas are included with your stay at Isalos.',
+      'The beach right in front of Isalos — awarded with the Blue Flag for water quality, Velika is a long stretch of sand and fine pebbles with crystal clear water. Relatively uncrowded even in peak season, it is the perfect base for a relaxed beach holiday.',
   },
   {
     name: 'Rakopotamos Beach',
