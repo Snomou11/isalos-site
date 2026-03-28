@@ -11,11 +11,11 @@ const features = [
 ]
 
 const roomPreviews = [
-  { slug: 'studio',           name: 'Studio',           img: '/images/1.webp',     guests: 2, price: 60 },
-  { slug: 'double',           name: 'Double Room',      img: '/images/2.webp',     guests: 2, price: 70 },
-  { slug: 'superior-suite-1', name: 'Superior Suite 1', img: '/images/sof1.webp',  guests: 2, price: 90 },
-  { slug: 'superior-suite-2', name: 'Superior Suite 2', img: '/images/sof2b.webp', guests: 2, price: 90 },
-  { slug: 'family',           name: 'Family Room',      img: '/images/3.webp',     guests: 4, price: 85 },
+  { slug: 'studio',           name: 'Studio',           img: '/images/1.webp',     guests: 2, price: 0,
+  { slug: 'double',           name: 'Double Room',      img: '/images/2.webp',     guests: 2, price: 0 },
+  { slug: 'superior-suite-1', name: 'Superior Suite 1', img: '/images/sof1.webp',  guests: 2, price: 0 },
+  { slug: 'superior-suite-2', name: 'Superior Suite 2', img: '/images/sof2b.webp', guests: 2, price: 0 },
+  { slug: 'family',           name: 'Family Room',      img: '/images/3.webp',     guests: 4, price: 0 },
 ]
 
 const reviews = [
