@@ -27,8 +27,11 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+  // ─── EMAIL DEBUG BLOCK ────────────────────────────────────────────────────
   try {
-    await resend.emails.send({
+    console.log('📧 Sending owner email to:', process.env.OWNER_EMAIL)
+
+    const result1 = await resend.emails.send({
       from: 'Isalos Reservations <onboarding@resend.dev>',
       to: process.env.OWNER_EMAIL!,
       subject: `New Reservation — ${body.room_name} — ${body.guest_name}`,
@@ -50,8 +53,11 @@ export async function POST(req: NextRequest) {
           <p style="margin-top:20px;color:#6b7280;font-size:13px;">Reply to this email to contact the guest directly.</p>
         </div>`,
     })
+    console.log('✅ Owner email result:', JSON.stringify(result1))
 
-    await resend.emails.send({
+    console.log('📧 Sending guest email to:', body.guest_email)
+
+    const result2 = await resend.emails.send({
       from: 'Isalos Apartments <onboarding@resend.dev>',
       to: body.guest_email,
       subject: 'We received your reservation — Isalos Apartments',
@@ -67,10 +73,21 @@ export async function POST(req: NextRequest) {
           </div>
           <p style="color:#4b5563;">The owner will contact you within <strong>24 hours</strong> to confirm.</p>
           <hr style="margin:24px 0;border:none;border-top:1px solid #e5e7eb;" />
-          <p style="color:#9ca3af;font-size:12px;">Isalos Apartments · Velika, Thessaly, Greece</p>
+          <p style="color:#9ca3af;font-size:12px;">Isalos Apartments · Naxos, Greece</p>
         </div>`,
     })
-  } catch(e) { console.error('Email error:', e) }
+    console.log('✅ Guest email result:', JSON.stringify(result2))
+
+  } catch (e) {
+    console.error('❌ Email error:', e)
+    // Return the error visibly so you see it in the browser response
+    return NextResponse.json({
+      success: true,
+      reservation: data,
+      emailError: String(e)
+    })
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   return NextResponse.json({ success: true, reservation: data })
 }
