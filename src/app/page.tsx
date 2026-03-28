@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 
+
 const features = [
   { icon: '🌊', title: 'Beachfront Location', desc: 'Sea in front, mountains behind — Velika beach is your backyard.' },
   { icon: '🏡', title: 'Home Comforts',        desc: 'Fully equipped kitchens, private bathrooms, A/C and free Wi-Fi.' },
@@ -10,13 +11,12 @@ const features = [
 ]
 
 const roomPreviews = [
-  { slug: 'studio',           name: 'Studio',           img: '/images/1.webp',     guests: 2, price: 60 },
-  { slug: 'double',           name: 'Double Room',       img: '/images/2.webp',     guests: 2, price: 70 },
-  { slug: 'superior-suite-1', name: 'Superior Suite 1',  img: '/images/sof1.webp',  guests: 2, price: 90 },
-  { slug: 'superior-suite-2', name: 'Superior Suite 2',  img: '/images/sof2b.webp', guests: 2, price: 90 },
-  { slug: 'family',           name: 'Family Room',       img: '/images/3.webp',     guests: 4, price: 85 },
+  { slug: 'studio',            name: 'Studio',            img: '/images/1.webp',     guests: 2, price: 60 },
+  { slug: 'double',            name: 'Double Room',       img: '/images/2.webp',     guests: 2, price: 70 },
+  { slug: 'superior-suite-1',  name: 'Superior Suite 1',  img: '/images/sof1.webp',  guests: 2, price: 90 },
+  { slug: 'superior-suite-2',  name: 'Superior Suite 2',  img: '/images/sof2b.webp', guests: 2, price: 90 },
+  { slug: 'family',            name: 'Family Room',       img: '/images/3.webp',     guests: 4, price: 85 },
 ]
-
 
 const reviews = [
   {
@@ -60,47 +60,67 @@ const reviews = [
 export default function HomePage() {
   return (
     <>
-      {/* ── HERO ── */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        <Image
-          src="/images/beach2.jpg"
-          alt="Velika beach — Isalos Apartments"
-          fill
-          className="object-cover object-center"
-          priority
-        />
-        <div className="absolute inset-0"
-          style={{ background: 'linear-gradient(135deg, rgba(26,54,93,0.72) 0%, rgba(26,54,93,0.4) 50%, rgba(0,0,0,0.55) 100%)' }} />
+{/* ── HERO ── CENTER/RIGHT IMAGES ONLY + NO SCROLL */}
+{/* ── HERO ── EXACT RED DOT POSITIONS + beach3 */}
+<section className="relative h-screen pt-[90px] overflow-hidden font-['Times_New_Roman']">
+  
+  {/* Light beige background */}
+  <div className="absolute inset-0 bg-gradient-to-br from-[#F5F5DC] via-[#FAF0E6] to-[#FDF6E3]" />
+  
+  {/* Images - EXACT screenshot positions */}
+  <div className="absolute inset-0 pointer-events-none">
+    
+    {/* Position 1: Top-right (red dot 1) */}
+    <div className="absolute top-20 right-20 w-52 h-40 lg:w-72 lg:h-52 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/60 z-10">
+      <Image src="/images/mprosta.webp" alt="Exterior" fill className="object-cover" sizes="20vw" />
+    </div>
+    
+    {/* Position 2: Center-right (red dot 2) */}
+    <div className="absolute top-[45%] right-8 lg:right-16 w-56 h-48 lg:w-72 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/50 z-20">
+      <Image src="/images/sof1.webp" alt="Suite" fill className="object-cover" sizes="20vw" />
+    </div>
+    
+    {/* Position 3: Center (red dot 3) */}
+    <div className="absolute top-[55%] left-1/2 -translate-x-1/2 w-64 h-48 lg:w-80 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/40 z-30">
+      <Image src="/images/1.webp" alt="Studio" fill className="object-cover" sizes="22vw" />
+    </div>
+    
+    {/* Position 4: Bottom-right (red dot 4) */}
+    <div className="absolute bottom-28 right-8 lg:right-90 w-48 h-36 lg:w-60 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/30 z-15">
+      <Image src="/images/beach3.webp" alt="Beach3" fill className="object-cover" sizes="18vw" />
+    </div>
+    
+    {/* Position 5: Right-middle */}
+    <div className="absolute top-[25%] left-300 lg:right-8 w-44 h-36 lg:w-56 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/35 z-25">
+      <Image src="/images/beach2.webp" alt="Beach" fill className="object-cover" sizes="16vw" />
+    </div>
+    
+  </div>
 
-        <div className="relative z-10 text-center text-white px-4 max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 border border-white/30 backdrop-blur-md bg-white/10 rounded-full px-5 py-2 text-xs font-semibold tracking-[0.25em] uppercase text-white/90 mb-8">
-            📍 Velika · Larisa · Greece
-          </div>
-          <h1 className="font-serif text-5xl md:text-7xl font-bold leading-tight mb-4 drop-shadow-lg">
-            Isalos Apartments
-          </h1>
-          <p className="text-xl md:text-2xl text-white/75 font-light mb-12 max-w-2xl mx-auto leading-relaxed">
-            The beach is right there. The mountains are right behind. Everything else fades away.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/rooms"
-              style={{ backgroundColor: 'white', color: '#1A365D' }}
-              className="font-bold px-10 py-4 rounded-full text-base shadow-2xl hover:-translate-y-1 transition-all duration-300">
-              View Our Rooms →
-            </Link>
-            <Link href="/gallery"
-              style={{ border: '2px solid rgba(255,255,255,0.5)', color: 'white', backgroundColor: 'rgba(255,255,255,0.08)' }}
-              className="font-semibold px-10 py-4 rounded-full text-base backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
-              Photo Gallery
-            </Link>
-          </div>
-        </div>
+  {/* Slogan */}
+  <div className="relative z-40 flex flex-col items-start justify-center h-full px-8 lg:px-16 xl:px-32 max-w-3xl ml-0 lg:ml-16">
+    <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.85] mb-8 drop-shadow-2xl"
+        style={{ color: '#2C1810' }}>
+      ISALOS
+    </h1>
+    <h2 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal mb-16 opacity-80 drop-shadow-xl"
+        style={{ color: '#3C2F2F' }}>
+      Beachfront Apartments
+    </h2>
+  </div>
 
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/50">
-          <span className="text-xs tracking-widest uppercase font-medium">Discover</span>
-          <div className="w-px h-12 bg-gradient-to-b from-white/50 to-transparent" />
-        </div>
-      </section>
+</section>
+
+
+
+
+
+      
+    </>
+  
+  )
+}
+
 
       {/* ── FEATURES ── */}
       <section className="max-w-6xl mx-auto px-4 py-24">
@@ -249,6 +269,4 @@ export default function HomePage() {
           </Link>
         </div>
       </section>
-    </>
-  )
-}
+
