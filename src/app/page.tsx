@@ -83,7 +83,7 @@ export default function HomePage() {
           {/* Right-middle */}
           <div
             style={animImg('1.1s')}
-            className="absolute top-[25%] left-300 lg:right-8 w-44 h-36 lg:w-56 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/35 z-25"
+            className="absolute top-[25%] left-220 lg:right-8 w-44 h-36 lg:w-56 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/35 z-25"
           >
             <Image src="/images/beach2.webp" alt="Beach" fill className="object-cover" sizes="16vw" />
           </div>
