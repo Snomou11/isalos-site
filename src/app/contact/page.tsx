@@ -25,10 +25,8 @@ export default function ContactPage() {
         <div className="space-y-6">
           {[
             { icon: '📍', label: 'Address',   value: 'Velika, Larisa, Greece',     href: null },
-            { icon: '📞', label: 'Phone',     value: '+30 6947811102',           href: 'tel:+306947811102' },
+            { icon: '📞', label: 'Phone',     value: '+30 6947811102',             href: 'tel:+306947811102' },
             { icon: '✉️', label: 'Email',     value: 'isalosrooms@gmail.com',      href: 'mailto:isalosrooms@gmail.com' },
-            { icon: '🕐', label: 'Check-in',  value: '15:00 – 21:00',              href: null },
-            { icon: '🕙', label: 'Check-out', value: '08:00 – 11:00',              href: null },
           ].map(item => (
             <div key={item.label} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm">
               <span className="text-2xl">{item.icon}</span>
@@ -50,7 +48,7 @@ export default function ContactPage() {
         {/* Map */}
         <div className="rounded-3xl overflow-hidden shadow-lg border border-gray-100 h-[450px]">
           <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3036.5!2d23.073!3d39.227!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zVmVsaWthIEJlYWNo!5e0!3m2!1sen!2sgr!4v1"
+            src="https://www.google.com/maps?q=39.738777, 22.863944&z=16&output=embed"
             width="100%"
             height="100%"
             style={{ border: 0 }}
