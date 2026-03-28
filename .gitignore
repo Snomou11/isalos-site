@@ -28,5 +28,3 @@ yarn-error.log*
 .vscode/
 .idea/
 
-# Local images and assets
-public/images/
