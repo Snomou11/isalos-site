@@ -1,8 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserClient } from '@supabase/ssr'
 
 type Room = { id: number; name: string; slug: string }
 type View = 'dashboard' | 'availability' | 'prices'
@@ -18,6 +17,13 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 const MONTHS = ['January','February','March','April','May','June',
                 'July','August','September','October','November','December']
 
+function getSupabase() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
+
 function getDatesInRange(from: Date, to: Date): string[] {
   const dates: string[] = []
   const cur = new Date(from)
@@ -29,24 +35,96 @@ function getDatesInRange(from: Date, to: Date): string[] {
 }
 
 export default function AdminPage() {
+  const supabase = getSupabase()
+  const [auth, setAuth] = useState<'loading' | 'out' | 'in'>('loading')
   const [view, setView] = useState<View>('dashboard')
   const [rooms, setRooms] = useState<Room[]>([])
-  const supabase = createClient()
-  const router = useRouter()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+  const [loggingIn, setLoggingIn] = useState(false)
 
   useEffect(() => {
-    supabase.from('rooms').select('id, name, slug').order('id')
-      .then(({ data }) => { if (data) setRooms(data) })
+    supabase.auth.getUser().then(({ data }) => {
+      setAuth(data.user ? 'in' : 'out')
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setAuth(session ? 'in' : 'out')
+    })
+    return () => subscription.unsubscribe()
   }, [])
+
+  useEffect(() => {
+    if (auth !== 'in') return
+    supabase.from('rooms').select('id, name, slug').order('id')
+      .then(({ data }) => { if (data) setRooms(data as Room[]) })
+  }, [auth])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoggingIn(true)
+    setLoginError('')
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    setLoggingIn(false)
+    if (error) { setLoginError(error.message); return }
+    setEmail('')
+    setPassword('')
+  }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
-    router.push('/admin/login')
+    setAuth('out')
+  }
+
+  if (auth === 'loading') {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-400 text-sm">Checking session...</p>
+      </main>
+    )
+  }
+
+  if (auth === 'out') {
+    return (
+      <main className="min-h-screen flex items-center justify-center px-4 py-10 bg-gray-50">
+        <form
+          onSubmit={handleLogin}
+          className="w-full max-w-md bg-white rounded-2xl border border-neutral-200 p-6 shadow-sm space-y-4"
+        >
+          <div>
+            <h1 className="text-2xl font-bold">Admin login</h1>
+            <p className="text-sm text-neutral-500 mt-1">Sign in to manage prices and availability.</p>
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="email" className="text-sm font-medium">Email</label>
+            <input
+              id="email" type="email" required
+              value={email} onChange={e => setEmail(e.target.value)}
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div className="space-y-1">
+            <label htmlFor="password" className="text-sm font-medium">Password</label>
+            <input
+              id="password" type="password" required
+              value={password} onChange={e => setPassword(e.target.value)}
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          {loginError && <p className="text-sm text-red-600">{loginError}</p>}
+          <button
+            type="submit" disabled={loggingIn}
+            className="w-full bg-black text-white rounded-xl py-3 font-semibold text-sm disabled:opacity-60"
+          >
+            {loggingIn ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+      </main>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Nav */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-4">
         <button
           onClick={() => setView('dashboard')}
@@ -73,7 +151,6 @@ export default function AdminPage() {
             </button>
           ))}
         </nav>
-        {/* Logout Button */}
         <button
           onClick={handleLogout}
           className="ml-auto px-4 py-1.5 rounded-full text-sm font-medium text-red-600 border border-red-200 hover:bg-red-50 transition"
@@ -91,7 +168,6 @@ export default function AdminPage() {
   )
 }
 
-// ─── Dashboard ────────────────────────────────────────────────────────────────
 function Dashboard({ setView, rooms }: { setView: (v: View) => void; rooms: Room[] }) {
   return (
     <div>
@@ -123,9 +199,8 @@ function Dashboard({ setView, rooms }: { setView: (v: View) => void; rooms: Room
   )
 }
 
-// ─── Availability Manager ─────────────────────────────────────────────────────
 function AvailabilityManager({ setView, rooms }: { setView: (v: View) => void; rooms: Room[] }) {
-  const supabase = createClient()
+  const supabase = getSupabase()
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set())
   const [selecting, setSelecting] = useState<string | null>(null)
@@ -144,7 +219,7 @@ function AvailabilityManager({ setView, rooms }: { setView: (v: View) => void; r
       .then(({ data }) => {
         if (!data) return
         const all = new Set<string>()
-        data.forEach(row =>
+        ;(data as { date_from: string; date_to: string }[]).forEach(row =>
           getDatesInRange(new Date(row.date_from), new Date(row.date_to)).forEach(d => all.add(d))
         )
         setBlockedDates(all)
@@ -212,7 +287,6 @@ function AvailabilityManager({ setView, rooms }: { setView: (v: View) => void; r
 
   return (
     <div>
-      {/* Back Button - Added here as requested */}
       <div className="flex items-center gap-3 mb-4">
         <button
           onClick={() => setView('dashboard')}
@@ -291,9 +365,8 @@ function AvailabilityManager({ setView, rooms }: { setView: (v: View) => void; r
   )
 }
 
-// ─── Prices Manager ───────────────────────────────────────────────────────────
 function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: Room[] }) {
-  const supabase = createClient()
+  const supabase = getSupabase()
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [prices, setPrices] = useState<PriceRow[]>([])
   const [loading, setLoading] = useState(false)
@@ -311,14 +384,17 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
     setLoading(true)
     setForm(f => ({ ...f, room_slug: selectedSlug }))
     supabase.from('prices').select('*').eq('room_slug', selectedSlug).order('date_from')
-      .then(({ data }) => { if (data) setPrices(data); setLoading(false) })
+      .then(({ data }) => {
+        if (data) setPrices(data as PriceRow[])
+        setLoading(false)
+      })
   }, [selectedSlug])
 
   const handleAdd = async () => {
     if (!form.date_from || !form.date_to || !form.price_per_night) return
     setSaving(true)
     const { data, error } = await supabase.from('prices').insert([form]).select().single()
-    if (!error && data) setPrices(prev => [...prev, data])
+    if (!error && data) setPrices(prev => [...prev, data as PriceRow])
     setForm(f => ({ ...f, date_from: '', date_to: '', price_per_night: 0 }))
     setSaving(false)
     setMessage('✅ Price added!')
@@ -332,7 +408,6 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
 
   return (
     <div>
-      {/* Back Button - Added here as requested */}
       <div className="flex items-center gap-3 mb-4">
         <button
           onClick={() => setView('dashboard')}
@@ -345,7 +420,6 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
         <h2 className="text-xl font-bold text-gray-800">💶 Prices Manager</h2>
       </div>
 
-      {/* Room Selector */}
       <div className="mb-6">
         <p className="text-sm text-gray-500 mb-2">Select a room:</p>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -367,7 +441,6 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
 
       {selectedSlug && (
         <>
-          {/* Add Price Form */}
           <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6">
             <h3 className="font-semibold text-gray-700 mb-4">Add a Price Period</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
@@ -407,7 +480,6 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
             {message && <p className="mt-2 text-green-600 text-sm font-medium">{message}</p>}
           </div>
 
-          {/* Prices Table */}
           {loading ? (
             <p className="text-gray-400">Loading...</p>
           ) : prices.length === 0 ? (

@@ -27,21 +27,6 @@ type FormData = {
   message?: string
 }
 
-// Returns seasonal price based on current month
-function getSeasonalPrice(basePrice: number): number {
-  const month = new Date().getMonth() + 1 // 1–12
-  if (month >= 7 && month <= 8) return Math.round(basePrice * 1.4)  // July–August: +40%
-  if (month === 6 || month === 9) return Math.round(basePrice * 1.2) // June & September: +20%
-  return basePrice                                                     // Off-season: base price
-}
-
-function getSeasonLabel(basePrice: number): string | null {
-  const month = new Date().getMonth() + 1
-  if (month >= 7 && month <= 8) return 'Peak season rate'
-  if (month === 6 || month === 9) return 'High season rate'
-  return null
-}
-
 export default function RoomPage() {
   const { slug } = useParams()
   const room = rooms.find(r => r.slug === slug)
@@ -49,24 +34,19 @@ export default function RoomPage() {
   const [status, setStatus] = useState<'idle'|'loading'|'success'|'error'>('idle')
   const [blockedDates, setBlockedDates] = useState<Date[]>([])
   const [range, setRange] = useState<{ from?: Date; to?: Date }>({})
-  const [pricePerNight, setPricePerNight] = useState(
-    room ? getSeasonalPrice(room.price_per_night) : 0
-  )
+  const [pricePerNight, setPricePerNight] = useState(room?.price_per_night ?? 0)
+  const [basePricePerNight, setBasePricePerNight] = useState(room?.price_per_night ?? 0)
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: { guests_count: 1 },
   })
 
+  // Load blocked dates on mount
   useEffect(() => {
     if (!slug) return
     const load = async () => {
-      // Fetch price from rooms table
-      const { data: roomData } = await supabase
-        .from('rooms').select('price_per_night').eq('slug', slug).single()
-      if (roomData) setPricePerNight(getSeasonalPrice(roomData.price_per_night))
-
-      // Fetch blocked ranges from availability table (what admin sets)
+      // Fetch blocked ranges from availability table
       const { data: blocked } = await supabase
         .from('availability')
         .select('date_from, date_to')
@@ -103,10 +83,49 @@ export default function RoomPage() {
         })
         setBlockedDates(prev => [...prev, ...resDates])
       }
+
+      // Fetch base price from rooms table
+      const { data: roomData } = await supabase
+        .from('rooms').select('price_per_night').eq('slug', slug).single()
+      if (roomData) {
+        setPricePerNight(roomData.price_per_night)
+        setBasePricePerNight(roomData.price_per_night)
+      }
     }
     load()
   }, [slug])
 
+  // When date range changes, look up price from room_prices table
+  useEffect(() => {
+    if (!slug || !range.from || !range.to) {
+      setPricePerNight(basePricePerNight)
+      return
+    }
+
+    const fetchPrice = async () => {
+      const checkIn  = format(range.from!, 'yyyy-MM-dd')
+      const checkOut = format(range.to!,   'yyyy-MM-dd')
+
+      // Find a price row that covers the selected check-in date
+      const { data: priceRows } = await supabase
+        .from('room_prices')
+        .select('*')
+        .eq('room_slug', slug)
+        .lte('date_from', checkIn)
+        .gte('date_to', checkIn)
+        .limit(1)
+
+      if (priceRows && priceRows.length > 0) {
+        setPricePerNight(priceRows[0].price_per_night)
+      } else {
+        setPricePerNight(basePricePerNight)
+      }
+    }
+
+    fetchPrice()
+  }, [slug, range.from, range.to] )
+
+  
   const nights = range.from && range.to
     ? differenceInCalendarDays(range.to, range.from) : 0
   const totalPrice = nights * pricePerNight
@@ -117,8 +136,6 @@ export default function RoomPage() {
   if (!room) return (
     <div className="pt-32 text-center text-gray-500">Room not found.</div>
   )
-
-  const seasonLabel = getSeasonLabel(room.price_per_night)
 
   const onSubmit = async (data: FormData) => {
     if (!range.from || !range.to) {
@@ -156,9 +173,9 @@ export default function RoomPage() {
               €{pricePerNight} / night
             </span>
           </p>
-          {seasonLabel && (
+          {range.from && range.to && pricePerNight !== basePricePerNight && (
             <span className="text-xs bg-orange-100 text-orange-600 px-3 py-1 rounded-full font-semibold">
-              🌞 {seasonLabel}
+              🌞 Special season rate
             </span>
           )}
         </div>
@@ -169,29 +186,25 @@ export default function RoomPage() {
         {/* LEFT — Images + Amenities */}
         <div>
           <div className="relative h-96 rounded-3xl overflow-hidden mb-3 shadow-md">
-            <Image src={room.images[activeImg]} alt={room.name} fill className="object-cover" 
+            <Image src={room.images[activeImg]} alt={room.name} fill className="object-cover"
             sizes="(max-width: 1024px) 100vw, 50vw"/>
           </div>
 
-          {/* Thumbnails */}
           <div className="flex gap-2 overflow-x-auto pb-2">
             {room.images.map((img, i) => (
               <button key={i} onClick={() => setActiveImg(i)}
                 className={`relative w-20 h-16 rounded-xl overflow-hidden flex-shrink-0 border-2 transition-all duration-200
                   ${i === activeImg ? 'border-isalos-blue scale-105 shadow-md' : 'border-transparent opacity-70 hover:opacity-100'}`}>
-                <Image src={img} alt="" fill className="object-cover"
-                sizes="80px" />
+                <Image src={img} alt="" fill className="object-cover" sizes="80px" />
               </button>
             ))}
           </div>
 
-          {/* Amenities */}
           <div className="mt-6">
             <h3 className="font-semibold text-isalos-dark text-lg mb-3">Amenities</h3>
             <div className="flex flex-wrap gap-2">
               {room.amenities.map(a => (
-                <span key={a}
-                  className="bg-isalos-sand text-isalos-stone text-sm px-4 py-2 rounded-full font-medium">
+                <span key={a} className="bg-isalos-sand text-isalos-stone text-sm px-4 py-2 rounded-full font-medium">
                   ✓ {a}
                 </span>
               ))}
@@ -207,7 +220,6 @@ export default function RoomPage() {
             Request a Reservation
           </h2>
 
-          {/* Best Price Guaranteed badge */}
           <div className="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-4 py-1.5 mb-4">
             <span className="text-green-600 text-xs font-bold">✓ Best Price Guaranteed</span>
             <span className="text-green-500 text-xs">— Book direct, no fees</span>
@@ -256,9 +268,6 @@ export default function RoomPage() {
                     <p className="text-sm text-blue-200 mt-0.5">
                       {nights} night{nights > 1 ? 's' : ''} × €{pricePerNight}
                     </p>
-                    {seasonLabel && (
-                      <p className="text-xs text-orange-300 mt-0.5">🌞 {seasonLabel}</p>
-                    )}
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-blue-200 mb-0.5">Total</p>
@@ -276,28 +285,17 @@ export default function RoomPage() {
               {/* FULL NAME */}
               <div>
                 <label className="text-sm font-semibold text-gray-600 block mb-1.5">Full Name *</label>
-                <input
-                  {...register('guest_name')}
-                  placeholder="Your full name"
-                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400"
-                />
-                {errors.guest_name && (
-                  <p className="text-red-500 text-xs mt-1">{errors.guest_name.message}</p>
-                )}
+                <input {...register('guest_name')} placeholder="Your full name"
+                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400" />
+                {errors.guest_name && <p className="text-red-500 text-xs mt-1">{errors.guest_name.message}</p>}
               </div>
 
               {/* EMAIL */}
               <div>
                 <label className="text-sm font-semibold text-gray-600 block mb-1.5">Email *</label>
-                <input
-                  {...register('guest_email')}
-                  type="email"
-                  placeholder="your@email.com"
-                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400"
-                />
-                {errors.guest_email && (
-                  <p className="text-red-500 text-xs mt-1">{errors.guest_email.message}</p>
-                )}
+                <input {...register('guest_email')} type="email" placeholder="your@email.com"
+                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400" />
+                {errors.guest_email && <p className="text-red-500 text-xs mt-1">{errors.guest_email.message}</p>}
               </div>
 
               {/* PHONE */}
@@ -305,20 +303,15 @@ export default function RoomPage() {
                 <label className="text-sm font-semibold text-gray-600 block mb-1.5">
                   Phone <span className="text-gray-400 font-normal">(optional)</span>
                 </label>
-                <input
-                  {...register('guest_phone')}
-                  placeholder="+30 ..."
-                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400"
-                />
+                <input {...register('guest_phone')} placeholder="+30 ..."
+                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400" />
               </div>
 
               {/* GUESTS */}
               <div>
                 <label className="text-sm font-semibold text-gray-600 block mb-1.5">Number of Guests *</label>
-                <select
-                  {...register('guests_count')}
-                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 appearance-none cursor-pointer"
-                >
+                <select {...register('guests_count')}
+                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 appearance-none cursor-pointer">
                   {[1, 2, 3, 4].map(n => (
                     <option key={n} value={n}>{n} guest{n > 1 ? 's' : ''}</option>
                   ))}
@@ -330,12 +323,9 @@ export default function RoomPage() {
                 <label className="text-sm font-semibold text-gray-600 block mb-1.5">
                   Message <span className="text-gray-400 font-normal">(optional)</span>
                 </label>
-                <textarea
-                  {...register('message')}
-                  rows={2}
+                <textarea {...register('message')} rows={2}
                   placeholder="Any special requests or questions..."
-                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400 resize-none"
-                />
+                  className="w-full border-2 border-gray-100 rounded-2xl px-4 py-3 focus:outline-none focus:border-isalos-blue transition-colors bg-gray-50 text-gray-800 placeholder-gray-400 resize-none" />
               </div>
 
               {status === 'error' && (
@@ -358,7 +348,7 @@ export default function RoomPage() {
                 {status === 'loading'
                   ? '⏳ Sending your request...'
                   : nights > 0
-                    ? ` Send Reservation Request · €${totalPrice}`
+                    ? `Send Reservation Request · €${totalPrice}`
                     : 'Select dates to continue'}
               </button>
 
