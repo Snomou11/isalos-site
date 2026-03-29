@@ -6,7 +6,7 @@ const faqs = [
   {
     category: '🏨 The Apartments',
     items: [
-      { q: 'What is included in the room rate?', a: 'All rooms include A/C, free Wi-Fi, private bathroom, fully equipped kitchen or kitchenette, bed linen and towels. Sunbeds and umbrellas on the beach are also complimentary.' },
+      { q: 'What is included in the room rate?', a: 'All rooms include A/C, free Wi-Fi, private bathroom, fully equipped kitchen or kitchenette, bed linen and towels.' },
       { q: 'Is breakfast included?', a: 'We do not offer breakfast, but all apartments have a fully equipped kitchen so you can prepare your own meals at any time.' },
       { q: 'Are pets allowed?', a: 'We welcome small pets. Please let us know in advance when making your reservation so we can prepare accordingly.' },
       { q: 'Is there parking available?', a: 'Yes, free private parking is available on site for all guests.' },

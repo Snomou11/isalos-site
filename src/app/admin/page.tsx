@@ -84,8 +84,8 @@ export default function AdminPage() {
 
       <main className="max-w-4xl mx-auto p-6">
         {view === 'dashboard' && <Dashboard setView={setView} rooms={rooms} />}
-        {view === 'availability' && <AvailabilityManager rooms={rooms} />}
-        {view === 'prices' && <PricesManager rooms={rooms} />}
+        {view === 'availability' && <AvailabilityManager setView={setView} rooms={rooms} />}
+        {view === 'prices' && <PricesManager setView={setView} rooms={rooms} />}
       </main>
     </div>
   )
@@ -124,7 +124,7 @@ function Dashboard({ setView, rooms }: { setView: (v: View) => void; rooms: Room
 }
 
 // ─── Availability Manager ─────────────────────────────────────────────────────
-function AvailabilityManager({ rooms }: { rooms: Room[] }) {
+function AvailabilityManager({ setView, rooms }: { setView: (v: View) => void; rooms: Room[] }) {
   const supabase = createClient()
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [blockedDates, setBlockedDates] = useState<Set<string>>(new Set())
@@ -212,7 +212,19 @@ function AvailabilityManager({ rooms }: { rooms: Room[] }) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">📅 Availability Manager</h2>
+      {/* Back Button - Added here as requested */}
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => setView('dashboard')}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h2 className="text-xl font-bold text-gray-800">📅 Availability Manager</h2>
+      </div>
+
       <div className="mb-6">
         <p className="text-sm text-gray-500 mb-2">Select a room:</p>
         <div className="flex gap-2 overflow-x-auto pb-2">
@@ -280,7 +292,7 @@ function AvailabilityManager({ rooms }: { rooms: Room[] }) {
 }
 
 // ─── Prices Manager ───────────────────────────────────────────────────────────
-function PricesManager({ rooms }: { rooms: Room[] }) {
+function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: Room[] }) {
   const supabase = createClient()
   const [selectedSlug, setSelectedSlug] = useState<string | null>(null)
   const [prices, setPrices] = useState<PriceRow[]>([])
@@ -320,7 +332,18 @@ function PricesManager({ rooms }: { rooms: Room[] }) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">💶 Prices Manager</h2>
+      {/* Back Button - Added here as requested */}
+      <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => setView('dashboard')}
+          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h2 className="text-xl font-bold text-gray-800">💶 Prices Manager</h2>
+      </div>
 
       {/* Room Selector */}
       <div className="mb-6">
