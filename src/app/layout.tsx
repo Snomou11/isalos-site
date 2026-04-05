@@ -1,9 +1,12 @@
+import { Analytics } from "@vercel/analytics/next"
 import type { Metadata } from 'next'
+
 
 import { Inter, Playfair_Display, Cormorant_Garamond  } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.isalosapartments.com'),
