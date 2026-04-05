@@ -24,7 +24,7 @@ const reviews = [
   { name: 'Eleni P.',    country: '🇬🇷 Greece',  score: 10, text: 'A hidden gem at the foot of Larisa. Waking up to the sound of the sea every morning was magical. The owners are incredibly warm and welcoming.' },
   { name: 'Dimitris A.', country: '🇨🇾 Cyprus',  score: 9,  text: 'The Superior Suite was beautiful — wooden ceilings, stone walls, rain shower and a huge terrace. One of the best places we have stayed in Greece.' },
   { name: 'Sophie L.',   country: '🇫🇷 France',  score: 10, text: 'Perfect family stay. The beach right in front, the mountains behind, the rooms immaculate. Felt completely at home from the first moment.' },
-  { name: 'Nikos M.',    country: '🇬🇷 Greece',  score: 9,  text: 'Peaceful, clean, great value. The sunbeds and umbrellas are a wonderful bonus. Velika is such a beautiful unspoilt beach — we will be back next summer!' },
+  { name: 'Nikos M.',    country: '🇬🇷 Greece',  score: 9,  text: 'Peaceful, clean, great value. Velika is such a beautiful unspoilt beach — we will be back next summer!' },
 ]
 
 // Shared animation style helper
@@ -51,7 +51,7 @@ export default function HomePage() {
           {/* Top-right */}
           <div
             style={animImg('0.3s')}
-            className="absolute top-20 right-20 w-52 h-40 lg:w-72 lg:h-52 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/60 z-10"
+            className="hidden md:block absolute top-20 right-20 w-52 h-40 lg:w-72 lg:h-52 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/60 z-10"
           >
             <Image src="/images/mprosta.webp" alt="Exterior" fill className="object-cover" sizes="20vw" />
           </div>
@@ -59,7 +59,7 @@ export default function HomePage() {
           {/* Center-right */}
           <div
             style={animImg('0.5s')}
-            className="absolute top-[45%] right-8 lg:right-16 w-56 h-48 lg:w-72 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/50 z-20"
+            className="hidden md:block absolute top-[45%] right-8 lg:right-16 w-56 h-48 lg:w-72 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/50 z-20"
           >
             <Image src="/images/sof1.webp" alt="Suite" fill className="object-cover" sizes="20vw" />
           </div>
@@ -67,7 +67,7 @@ export default function HomePage() {
           {/* Center */}
           <div
             style={animImg('0.7s')}
-            className="absolute top-[55%] left-1/2 -translate-x-1/2 w-64 h-48 lg:w-80 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/40 z-30"
+            className="hidden md:block absolute top-[55%] left-1/2 -translate-x-1/2 w-64 h-48 lg:w-80 lg:h-56 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/40 z-30"
           >
             <Image src="/images/1.webp" priority alt="Studio" fill className="object-cover" sizes="22vw" />
           </div>
@@ -75,7 +75,7 @@ export default function HomePage() {
           {/* Bottom-right */}
           <div
             style={animImg('0.9s')}
-            className="absolute bottom-28 right-8 lg:right-90 w-48 h-36 lg:w-60 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/30 z-15"
+            className="hidden md:block absolute bottom-28 right-8 lg:right-90 w-48 h-36 lg:w-60 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/30 z-15"
           >
             <Image src="/images/beach3.webp" alt="Beach" fill className="object-cover" sizes="18vw" />
           </div>
@@ -83,7 +83,7 @@ export default function HomePage() {
           {/* Right-middle */}
           <div
             style={animImg('1.1s')}
-            className="absolute top-[25%] left-220 lg:right-8 w-44 h-36 lg:w-56 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/35 z-25"
+            className="hidden md:block absolute top-[25%] left-220 lg:right-8 w-44 h-36 lg:w-56 lg:h-44 rounded-3xl shadow-2xl overflow-hidden ring-4 ring-white/35 z-25"
           >
             <Image src="/images/beach2.webp" alt="Beach" fill className="object-cover" sizes="16vw" />
           </div>
