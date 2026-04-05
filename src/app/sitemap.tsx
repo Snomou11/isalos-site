@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = 'https://www.isalos-velika.gr'
+  const base = 'https://www.isalosapartments.com'  // ← fix this
   const rooms = ['studio', 'double', 'superior-suite-1', 'superior-suite-2', 'family']
 
   return [
