@@ -359,6 +359,10 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
     }
   }
 
+
+
+
+  
   const handleConfirmPrice = async () => {
     if (!selectedSlug || !pendingStart || !pendingEnd || !pendingPrice) return
     setSaving(true)
