@@ -11,6 +11,7 @@ import { differenceInCalendarDays, format, isSameDay } from 'date-fns'
 import 'react-day-picker/dist/style.css'
 import { supabase } from '@/lib/supabase'
 
+
 const schema = z.object({
   guest_name:   z.string().min(2, 'Name required'),
   guest_email:  z.string().email('Valid email required'),
@@ -96,34 +97,34 @@ export default function RoomPage() {
   }, [slug])
 
   // When date range changes, look up price from room_prices table
-  useEffect(() => {
-    if (!slug || !range.from || !range.to) {
+useEffect(() => {
+  if (!slug || !range.from || !range.to) {
+    setPricePerNight(basePricePerNight)
+    return
+  }
+
+  const fetchPrice = async () => {
+    const checkIn = format(range.from!, 'yyyy-MM-dd')
+
+    const { data: priceRows } = await supabase
+      .from('prices')
+      .select('price_per_night')
+      .eq('room_slug', slug)
+      .lte('date_from', checkIn)
+      .gte('date_to', checkIn)
+      .limit(1)
+
+    console.log('Price query:', { slug, checkIn, priceRows })
+
+    if (priceRows && priceRows.length > 0) {
+      setPricePerNight(priceRows[0].price_per_night)
+    } else {
       setPricePerNight(basePricePerNight)
-      return
     }
+  }
 
-    const fetchPrice = async () => {
-      const checkIn  = format(range.from!, 'yyyy-MM-dd')
-      const checkOut = format(range.to!,   'yyyy-MM-dd')
-
-      // Find a price row that covers the selected check-in date
-      const { data: priceRows } = await supabase
-        .from('room_prices')
-        .select('*')
-        .eq('room_slug', slug)
-        .lte('date_from', checkIn)
-        .gte('date_to', checkIn)
-        .limit(1)
-
-      if (priceRows && priceRows.length > 0) {
-        setPricePerNight(priceRows[0].price_per_night)
-      } else {
-        setPricePerNight(basePricePerNight)
-      }
-    }
-
-    fetchPrice()
-  }, [slug, range.from, range.to] )
+  fetchPrice()
+}, [slug, range.from, range.to, basePricePerNight] )
 
   
   const nights = range.from && range.to

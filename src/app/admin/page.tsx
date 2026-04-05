@@ -322,32 +322,104 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
-  const [form, setForm] = useState({ room_slug: '', date_from: '', date_to: '', price_per_night: 0 })
+  const [currentMonth, setCurrentMonth] = useState(new Date())
+  const [selecting, setSelecting] = useState<string | null>(null)
+  const [pendingStart, setPendingStart] = useState<string | null>(null)
+  const [pendingPrice, setPendingPrice] = useState<number>(0)
+  const [showPriceInput, setShowPriceInput] = useState(false)
+  const [pendingEnd, setPendingEnd] = useState<string | null>(null)
 
   useEffect(() => {
     if (!selectedSlug) return
     setLoading(true)
-    setForm(f => ({ ...f, room_slug: selectedSlug }))
     supabase.from('prices').select('*').eq('room_slug', selectedSlug).order('date_from')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .then(({ data }: any) => { if (data) setPrices(data); setLoading(false) })
   }, [selectedSlug])
 
-  const handleAdd = async () => {
-    if (!form.date_from || !form.date_to || !form.price_per_night) return
+  // Build a map of date → price for calendar display
+  const dateToPrice: Record<string, number> = {}
+  prices.forEach(p => {
+    getDatesInRange(new Date(p.date_from), new Date(p.date_to)).forEach(d => {
+      dateToPrice[d] = p.price_per_night
+    })
+  })
+
+  const handleDateClick = (dateStr: string) => {
+    if (!pendingStart) {
+      setPendingStart(dateStr)
+      setSelecting(dateStr)
+    } else {
+      const start = pendingStart < dateStr ? pendingStart : dateStr
+      const end = pendingStart < dateStr ? dateStr : pendingStart
+      setPendingStart(start)
+      setPendingEnd(end)
+      setSelecting(null)
+      setShowPriceInput(true)
+    }
+  }
+
+  const handleConfirmPrice = async () => {
+    if (!selectedSlug || !pendingStart || !pendingEnd || !pendingPrice) return
     setSaving(true)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await supabase.from('prices').insert([form]).select().single() as any
-    if (!error && data) setPrices(prev => [...prev, data])
-    setForm(f => ({ ...f, date_from: '', date_to: '', price_per_night: 0 }))
+
+    // Remove any existing price rows that overlap with this range
+    const toDelete = prices.filter(p => p.date_from <= pendingEnd! && p.date_to >= pendingStart!)
+    for (const p of toDelete) {
+      if (p.id) await supabase.from('prices').delete().eq('id', p.id)
+    }
+
+    const { data, error } = await supabase.from('prices').insert([{
+      room_slug: selectedSlug,
+      date_from: pendingStart,
+      date_to: pendingEnd,
+      price_per_night: pendingPrice,
+    }]).select().single() as any // eslint-disable-line @typescript-eslint/no-explicit-any
+
+    if (!error && data) {
+      // Reload all prices for this room
+      const { data: fresh } = await supabase.from('prices').select('*').eq('room_slug', selectedSlug).order('date_from') as any // eslint-disable-line @typescript-eslint/no-explicit-any
+      if (fresh) setPrices(fresh)
+    }
+
     setSaving(false)
-    setMessage('✅ Price added!')
+    setShowPriceInput(false)
+    setPendingStart(null)
+    setPendingEnd(null)
+    setPendingPrice(0)
+    setMessage('✅ Price saved!')
     setTimeout(() => setMessage(''), 3000)
+  }
+
+  const handleCancelPrice = () => {
+    setShowPriceInput(false)
+    setPendingStart(null)
+    setPendingEnd(null)
+    setPendingPrice(0)
+    setSelecting(null)
   }
 
   const handleDelete = async (id: number) => {
     await supabase.from('prices').delete().eq('id', id)
     setPrices(prev => prev.filter(p => p.id !== id))
+  }
+
+  const year = currentMonth.getFullYear()
+  const month = currentMonth.getMonth()
+  const firstDay = new Date(year, month, 1).getDay()
+  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const calCells = [...Array(firstDay).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
+
+  // Color scale for prices — low=green, mid=yellow, high=orange
+  const getPriceColor = (price: number) => {
+    if (price <= 80)  return 'bg-emerald-100 text-emerald-800 border-emerald-200'
+    if (price <= 130) return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+    return 'bg-orange-100 text-orange-800 border-orange-200'
+  }
+
+  const isInPendingRange = (dateStr: string) => {
+    if (!pendingStart || !pendingEnd) return false
+    return dateStr >= pendingStart && dateStr <= pendingEnd
   }
 
   return (
@@ -360,11 +432,13 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
         </button>
         <h2 className="text-xl font-bold text-gray-800">💶 Prices Manager</h2>
       </div>
+
+      {/* Room selector */}
       <div className="mb-6">
         <p className="text-sm text-gray-500 mb-2">Select a room:</p>
         <div className="flex gap-2 overflow-x-auto pb-2">
           {rooms.map(room => (
-            <button key={room.slug} onClick={() => setSelectedSlug(room.slug)}
+            <button key={room.slug} onClick={() => { setSelectedSlug(room.slug); handleCancelPrice() }}
               className={`px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition
                 ${selectedSlug === room.slug ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'}`}>
               {room.name}
@@ -372,64 +446,122 @@ function PricesManager({ setView, rooms }: { setView: (v: View) => void; rooms: 
           ))}
         </div>
       </div>
+
       {!selectedSlug && <p className="text-gray-400 text-center py-16">← Select a room to manage its prices</p>}
+
       {selectedSlug && (
         <>
-          <div className="bg-white border border-gray-200 rounded-xl p-5 mb-6">
-            <h3 className="font-semibold text-gray-700 mb-4">Add a Price Period</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">From</label>
-                <input type="date" value={form.date_from} onChange={e => setForm(f => ({ ...f, date_from: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+          {loading ? <p className="text-gray-400">Loading...</p> : (
+            <>
+              {/* Instructions / price input panel */}
+              {showPriceInput ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+                  <p className="text-sm font-medium text-blue-800 mb-3">
+                    📅 Range selected: <strong>{pendingStart}</strong> → <strong>{pendingEnd}</strong>
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                      <label className="text-xs text-blue-700 mb-1 block">Price per night (€)</label>
+                      <input
+                        type="number"
+                        autoFocus
+                        placeholder="e.g. 120"
+                        value={pendingPrice || ''}
+                        onChange={e => setPendingPrice(Number(e.target.value))}
+                        onKeyDown={e => e.key === 'Enter' && handleConfirmPrice()}
+                        className="w-full border border-blue-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white"
+                      />
+                    </div>
+                    <div className="flex gap-2 mt-5">
+                      <button onClick={handleConfirmPrice} disabled={saving || !pendingPrice}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+                        {saving ? 'Saving…' : '✓ Save'}
+                      </button>
+                      <button onClick={handleCancelPrice}
+                        className="px-4 py-2 bg-white border border-gray-300 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50">
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 mb-3 bg-gray-50 rounded-lg px-3 py-2">
+                  {selecting ? '📅 Click an end date to complete the range' : '👆 Click a start date, then an end date to set a price'}
+                </p>
+              )}
+
+              {message && <p className="mb-3 text-green-600 font-medium text-sm">{message}</p>}
+
+              {/* Calendar navigation */}
+              <div className="flex items-center justify-between mb-4">
+                <button onClick={() => setCurrentMonth(new Date(year, month - 1, 1))} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100">← Prev</button>
+                <span className="font-semibold text-lg">{MONTHS[month]} {year}</span>
+                <button onClick={() => setCurrentMonth(new Date(year, month + 1, 1))} className="px-3 py-1 rounded border border-gray-300 hover:bg-gray-100">Next →</button>
               </div>
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">To</label>
-                <input type="date" value={form.date_to} onChange={e => setForm(f => ({ ...f, date_to: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+
+              {/* Calendar grid */}
+              <div className="grid grid-cols-7 gap-1 mb-4">
+                {DAYS.map(d => <div key={d} className="text-center text-xs font-semibold text-gray-400 py-1">{d}</div>)}
+                {calCells.map((day, i) => {
+                  if (!day) return <div key={i} />
+                  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+                  const price = dateToPrice[dateStr]
+                  const isStart = selecting === dateStr
+                  const inPending = isInPendingRange(dateStr)
+
+                  return (
+                    <button key={dateStr} onClick={() => !showPriceInput && handleDateClick(dateStr)}
+                      className={`rounded py-1.5 text-xs font-medium transition border flex flex-col items-center justify-center min-h-[44px]
+                        ${isStart ? 'ring-2 ring-blue-500 bg-blue-100 border-blue-300' :
+                          inPending ? 'bg-blue-50 border-blue-200 text-blue-700' :
+                          price ? getPriceColor(price) :
+                          'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
+                      <span>{day}</span>
+                      {price && <span className="text-[9px] leading-tight opacity-80">€{price}</span>}
+                    </button>
+                  )
+                })}
               </div>
-              <div>
-                <label className="text-xs text-gray-500 mb-1 block">Price per Night (€)</label>
-                <input type="number" placeholder="e.g. 120" value={form.price_per_night || ''}
-                  onChange={e => setForm(f => ({ ...f, price_per_night: Number(e.target.value) }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400" />
+
+              {/* Legend */}
+              <div className="flex gap-4 text-xs mb-6 flex-wrap">
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-white border border-gray-200 inline-block" /> No price</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-emerald-100 border border-emerald-200 inline-block" /> ≤€80</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-yellow-100 border border-yellow-200 inline-block" /> €81–€130</span>
+                <span className="flex items-center gap-1"><span className="w-3 h-3 rounded bg-orange-100 border border-orange-200 inline-block" /> €131+</span>
               </div>
-            </div>
-            <button onClick={handleAdd} disabled={saving}
-              className="px-5 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
-              {saving ? 'Adding...' : '+ Add Price'}
-            </button>
-            {message && <p className="mt-2 text-green-600 text-sm font-medium">{message}</p>}
-          </div>
-          {loading ? (
-            <p className="text-gray-400">Loading...</p>
-          ) : prices.length === 0 ? (
-            <p className="text-gray-400 text-sm">No prices set for this room yet.</p>
-          ) : (
-            <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">From</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">To</th>
-                    <th className="text-left px-4 py-3 font-semibold text-gray-600">€/night</th>
-                    <th className="px-4 py-3" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {prices.map((p, i) => (
-                    <tr key={p.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-4 py-3 text-gray-600">{p.date_from}</td>
-                      <td className="px-4 py-3 text-gray-600">{p.date_to}</td>
-                      <td className="px-4 py-3 text-gray-800 font-semibold">€{p.price_per_night}</td>
-                      <td className="px-4 py-3 text-right">
-                        <button onClick={() => handleDelete(p.id!)} className="text-red-500 hover:text-red-700 text-xs font-medium">Delete</button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+
+              {/* Price periods table */}
+              {prices.length > 0 && (
+                <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+                  <div className="bg-gray-50 border-b border-gray-200 px-4 py-2">
+                    <h3 className="font-semibold text-gray-700 text-sm">Set Price Periods</h3>
+                  </div>
+                  <table className="w-full text-sm">
+                    <thead className="border-b border-gray-100">
+                      <tr>
+                        <th className="text-left px-4 py-2 font-medium text-gray-500 text-xs">From</th>
+                        <th className="text-left px-4 py-2 font-medium text-gray-500 text-xs">To</th>
+                        <th className="text-left px-4 py-2 font-medium text-gray-500 text-xs">€/night</th>
+                        <th className="px-4 py-2" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {prices.map((p, i) => (
+                        <tr key={p.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                          <td className="px-4 py-2 text-gray-600">{p.date_from}</td>
+                          <td className="px-4 py-2 text-gray-600">{p.date_to}</td>
+                          <td className="px-4 py-2 text-gray-800 font-semibold">€{p.price_per_night}</td>
+                          <td className="px-4 py-2 text-right">
+                            <button onClick={() => handleDelete(p.id!)} className="text-red-400 hover:text-red-600 text-xs">Delete</button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </>
           )}
         </>
       )}
