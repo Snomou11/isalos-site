@@ -26,7 +26,9 @@ export default function Footer() {
           <h4 className="font-semibold mb-3 text-isalos-lightblue">Contact</h4>
           <p className="text-sm text-gray-300 space-y-1">
             <span className="block">📍 Velika, Larisa, Greece</span>
-            <span className="block">✉️ isalosrooms@gmail.com</span>
+            <a href="mailto:isalosrooms@gmail.com" className="block hover:underline">
+  ✉️ isalosrooms@gmail.com
+</a>
           </p>
         </div>
       </div>
