@@ -47,7 +47,15 @@ export const rooms = [
     amenities: ['Two Single Beds', 'Balcony', 'Stone Wall Feature', 'A/C', 'Free Wi-Fi', 'Private Bathroom'],
     images: ['/images/3.webp'],
   },
+
+
+  
 ]
+
+
+
+
+
 
 export default function RoomsPage() {
   return (
@@ -81,14 +89,7 @@ export default function RoomsPage() {
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-              {/* Price badge */}
-              <div className="absolute top-4 right-4">
-                <div
-                  style={{ background: 'linear-gradient(135deg, #2B6CB0, #1A365D)' }}
-                  className="text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-lg backdrop-blur-sm">
-                  €{room.price_per_night} / night
-                </div>
-              </div>
+
             </div>
 
             {/* Content */}
